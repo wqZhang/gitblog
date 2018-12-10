@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="张文强的博客">
+    <meta name="keyword" content="卖马为生">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        GrapgQL介绍(一) - 张文强的博客 | wqZhang&#39;s Blog
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> sometimes code， sometimes design </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/img/avatar.jpg">
+        </div>
+        <div class="name">
+            <i>WenQiang Zhang</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archive">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#查询和修改-Queries-and-Mutations"><span class="toc-text">查询和修改(Queries and Mutations)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#字段-Fields"><span class="toc-text">字段(Fields)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参数-Arguments"><span class="toc-text">参数(Arguments)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#别名-Aliases"><span class="toc-text">别名(Aliases)</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i> sometimes code， sometimes design </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        GrapgQL介绍(一)
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2017-04-05 22:46:39</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#graphQL" title="graphQL">graphQL</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>最近在学习<a href="http://www.graphql.org/" target="_blank" rel="noopener">GraphQL</a> API查询语言，想把官网的介绍文档翻译一下，学习的同时分享知识。</p>
+<blockquote>
+<p>这一系列的文章是关于学习GraphQL怎么工作以及怎么使用。寻找怎么构建一个GraphQL服务？<br>这里有一些继承于GraphQL的多种语言的库。</p>
+</blockquote>
+<a id="more"></a>
+<p>GraphQL是一种针对你的API的查询语言，也是一种通过你对你的数据定义范式执行查询的服务器端运行时。<br>GraphQL不会绑定特定的数据库或者存储引擎而是使用你当前的代码和数据。</p>
+<p>一个GraphQL服务通过定义范式和范式里的字段来创建，然后为范式里的每一个字段提供功能。<br>例如，下面的GraphQL服务告诉我们谁登陆了(我)以及登陆用户的名称等一些信息：</p>
+<pre><code>type Query {
+    me: User
+}
+
+type User {
+    id: ID
+    name: String
+}
+</code></pre><p>匹配范式里每一个字段功能：</p>
+<pre><code>function Query_me(request) {
+  return request.auth.user;
+}
+
+function User_name(user) {
+  return user.getName();
+}
+</code></pre><p>当一个GraphQL服务运行时(通常是一个web服务的一条URL)，它会接收GraphQL查询请求来验证和执行。<br>接收的查询首先会被检查是不是只关联到定义好的范式和字段，然后运行提供的函数产生结果。</p>
+<p>一个查询的例子：</p>
+<pre><code>{
+  me {
+    name
+  }
+}
+</code></pre><p>生成的JSON结果：</p>
+<pre><code>{
+  &quot;me&quot;: {
+    &quot;name&quot;: &quot;Luke Skywalker&quot;
+  }
+}
+</code></pre><p>学习更多GraphQL – 查询语言，范式系统，GraphQL服务如何工作以及<br>使用QraphQL解决问题的最佳实践 – 请阅读以下章节。</p>
+<h1 id="查询和修改-Queries-and-Mutations"><a href="#查询和修改-Queries-and-Mutations" class="headerlink" title="查询和修改(Queries and Mutations)"></a>查询和修改(Queries and Mutations)</h1><p>在这个章节，你将详细地学习如何在一个GrapQL服务器上查询。</p>
+<h3 id="字段-Fields"><a href="#字段-Fields" class="headerlink" title="字段(Fields)"></a>字段(Fields)</h3><p>最基本的，GraphQL可以请求对象上的指定字段。让我们看一个非常简单的查询以及结果：</p>
+<pre><code>{
+  hero {
+    name
+  }
+}
+结果：
+{
+  &quot;data&quot;: {
+    &quot;hero&quot;: {
+      &quot;name&quot;: &quot;R2-D2&quot;
+    }
+  }
+}
+</code></pre><p>你可以直接地看到查询语句和结果是一样的结构。这是GraphQL最基本的功能，因为服务器明确地知道客户<br>需要哪些字段，所以你可以得到你预期的结果。</p>
+<p>在上面的例子中，字段name作为一个string类型返回，那个名字是星际大战主英雄的名字，<code>R2-D2</code>。</p>
+<blockquote>
+<p>顺便提一句 - 上面的查询语句是交互式的。也就是你可以按你的意愿改变结构并且得到对应的结果。<br>尝试在<code>hero</code>对象的查询语句里增加一个<code>appearsIn</code>字段并看看新的结果。</p>
+</blockquote>
+<p>在上个例子中，我们得到了个字符串当我们要求返回hero的name字段，其实返回的字段也可以是对象。<br>在例子中，你可以为返回的对象设置级联字段<em>sub-selection</em>。GraphQL查询可以联通相关的对象以及字段，<br>让客户端在一个请求中得到所有需要的相关数据，而不是像传统REST架构那样向服务器往返请求多次。</p>
+<pre><code>{
+  hero {
+    name
+    # Queries can have comments!
+    friends {
+      name
+    }
+  }
+}
+结果：
+{
+  &quot;data&quot;: {
+    &quot;hero&quot;: {
+      &quot;name&quot;: &quot;R2-D2&quot;,
+      &quot;friends&quot;: [
+        {
+          &quot;name&quot;: &quot;Luke Skywalker&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Han Solo&quot;
+        },
+        {
+          &quot;name&quot;: &quot;Leia Organa&quot;
+        }
+      ]
+    }
+  }
+}
+</code></pre><p>注意上面的例子，字段<code>friends</code>返回了一个数组。GraphQL查询对于单个项和列表项看起来相同，<br>但是我们根据给定的模式知道预期的内容。</p>
+<h3 id="参数-Arguments"><a href="#参数-Arguments" class="headerlink" title="参数(Arguments)"></a>参数(Arguments)</h3><p>如果我们唯一可以做的只是遍历对象以及其字段，那GraphQL已经是获取数据非常有用的语言。但是，当你<br>将参数传递给字段时，这就变的更有趣了。</p>
+<pre><code>{
+  human(id: &quot;1000&quot;) {
+    name
+    height
+  }
+}
+结果：
+{
+  &quot;data&quot;: {
+    &quot;human&quot;: {
+      &quot;name&quot;: &quot;Luke Skywalker&quot;,
+      &quot;height&quot;: 1.72
+    }
+  }
+}
+</code></pre><p>像REST系统，你只能传递一组参数-通过查询参数和请求URL。但是在GraphQL中，每个字段和嵌套对象都<br>可以获得自己的一组参数。从而使GraphQL可以替代多个API提取。你甚至可以将参数传递到标量字段中，<br>以便在服务器上实现数据转换，而不是分别在每个客户端上执行数据转换。</p>
+<pre><code>{
+  human(id: &quot;1000&quot;) {
+    name
+    height(unit: FOOT)
+  }
+}
+结果：
+{
+  &quot;data&quot;: {
+    &quot;human&quot;: {
+      &quot;name&quot;: &quot;Luke Skywalker&quot;,
+      &quot;height&quot;: 5.6430448
+    }
+  }
+}
+</code></pre><p>参数可以是很多不同的类型。在上面的例子中，我们使用了一个枚举类型，它表示一组有限选项<br>（在这种情况下是长度单位，或者是METER或FOOT）之一。GraphQL带有自己的默认类型，但是在GraphQL上<br>也可以自定义类型，自定义类型也可以在传输数据的时候序列化。</p>
+<p><a href="http://graphql.org/learn/schema/" target="_blank" rel="noopener">更多GraplQL类型内容</a></p>
+<h3 id="别名-Aliases"><a href="#别名-Aliases" class="headerlink" title="别名(Aliases)"></a>别名(Aliases)</h3><p>如果你观察仔细，你可能已经发现了，返回的结果对象字段的名字匹配查询的字段但不包括参数，<br>所以你不能直接的通过不同的参数查询同样的字段。这样你就需要别名-它可以让你把返回的结果重命名<br>成任何其他你想要的。</p>
+<pre><code>{
+  empireHero: hero(episode: EMPIRE) {
+    name
+  }
+  jediHero: hero(episode: JEDI) {
+    name
+  }
+}
+结果：
+{
+  &quot;data&quot;: {
+    &quot;empireHero&quot;: {
+      &quot;name&quot;: &quot;Luke Skywalker&quot;
+    },
+    &quot;jediHero&quot;: {
+      &quot;name&quot;: &quot;R2-D2&quot;
+    }
+  }
+}
+</code></pre><p>在上面的例子中，两个字段本应该有冲突，但是我们给他们定义了不同的别名后，<br>就可以在一个请求中获取所有的结果。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/zhang-wen-qiang-57-99">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+        <li>
+            <a target="_blank" href="http://weibo.com/3645516294">
+                            <span class="fa-stack fa-lg">
+                                  <i class="iconfont icon-weibo"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/wqZhang">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span>/</span>
+        
+        <span><a href="https://www.qiniu.com/">七牛</a></span>
+        <span>/</span>
+        
+        <span><a href="https://oschina.net">Oschina</a></span>
+        <span>/</span>
+        
+        <span><a href="#">It helps SEO</a></span>
+        <span>/</span>
+        
+    </p>
+    
+    <p>
+        <span>
+        <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17009870号</a> &nbsp;
+        </span>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        if( '' || '')
+        var disqus_config = function () {
+            this.page.url = '';  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://airclouds-blog.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+
+
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="张文强的博客">
+    <meta name="keyword" content="卖马为生">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        初次使用GraphQL - 张文强的博客 | wqZhang&#39;s Blog
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> sometimes code， sometimes design </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/img/avatar.jpg">
+        </div>
+        <div class="name">
+            <i>WenQiang Zhang</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archive">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i> sometimes code， sometimes design </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        初次使用GraphQL
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2017-04-28 14:28:07</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#graphql" title="graphql">graphql</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content no-indent">
+        <p>第一次使用graphQL进行数据的查询和读取<br>总的来说，graphQL本身挺好理解的,它是定义了新的一种数据交流方式<br>由于我用的是<code>java</code>语言，所以这里用了<a href="https://github.com/graphql-java/graphql-java" target="_blank" rel="noopener">graphql-java</a>的实现<br>但是中间有个关键点被我误解了，耽误了挺久的 –！<br><a id="more"></a></p>
+<p>构建了一个简单的书本信息和分类信息表进行测试，表结构如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//book</span></span><br><span class="line"><span class="meta">@Id</span></span><br><span class="line"><span class="keyword">private</span> String id;</span><br><span class="line"><span class="keyword">private</span> String name;</span><br><span class="line"><span class="keyword">private</span> String book_category_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">//book_category</span></span><br><span class="line"><span class="meta">@Id</span></span><br><span class="line"><span class="keyword">private</span> String id;</span><br><span class="line"><span class="keyword">private</span> String name;</span><br></pre></td></tr></table></figure></p>
+<p>主要想用graphQL来显示单个查询和关联查询，并且对返回的字段可控制<br>项目使用了Spring-boot以及JPA来构建</p>
+<p>在graphQL中，首先根据数据库结构定义返回结构体，也就是<code>GraphQLOutputType</code>对象<br>在我们的项目中，有两个返回结构体需要定义<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> GraphQLOutputType bookType;</span><br><span class="line"><span class="keyword">private</span> GraphQLOutputType categoryType;</span><br></pre></td></tr></table></figure></p>
+<p>然后定义一个初始化方法对上面两个<code>GraphQLOutputType</code>初始化<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * book</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">categoryType = newObject()</span><br><span class="line">        .name(<span class="string">"BookCategory"</span>)</span><br><span class="line">        .field(newFieldDefinition().name(<span class="string">"id"</span>).type(GraphQLString).build())</span><br><span class="line">        .field(newFieldDefinition().name(<span class="string">"name"</span>).type(GraphQLString).build())</span><br><span class="line">        .build();</span><br><span class="line">	</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * book</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">bookType = newObject()</span><br><span class="line">         .name(<span class="string">"Book"</span>)</span><br><span class="line">         .field(newFieldDefinition().name(<span class="string">"id"</span>).type(GraphQLString).build())</span><br><span class="line">         .field(newFieldDefinition().name(<span class="string">"name"</span>).type(GraphQLString).build())</span><br><span class="line">         .field(newFieldDefinition().name(<span class="string">"book_category_id"</span>).type(GraphQLString).build())</span><br><span class="line">         .field(newFieldDefinition().name(<span class="string">"bookCategory"</span>).type(categoryType).build())</span><br><span class="line">         .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后根据上面定义的结构，定义所需要返回的结构<br>这里有两点需要注意，定义的<code>name</code>属性对应了返回的具体结构体<br>另一个点就是坑我挺久的<code>dataFetcher</code>,它只提供了结构，不会帮你去获取数据<br>具体数据信息还是需要自己去获取，不管你是使用原生的jdbc，还是jpa，或者其他持久层框架<br>并且返回的数据结构需要和定义的一致</p>
+<p>我这里定了两个返回结构，book对应单本书籍信息，books对应书本列表信息：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> GraphQLFieldDefinition <span class="title">createBookField</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> GraphQLFieldDefinition.newFieldDefinition()</span><br><span class="line">               .name(<span class="string">"book"</span>)</span><br><span class="line">               .type(bookType)</span><br><span class="line">               .argument(newArgument().name(<span class="string">"id"</span>).type(GraphQLString).build())</span><br><span class="line">               .dataFetcher(environment -&gt; &#123;</span><br><span class="line">               	String id = environment.getArgument(<span class="string">"id"</span>);</span><br><span class="line">                   logger.debug(id);</span><br><span class="line"></span><br><span class="line">               	Book book = bookService.getBookById(id);</span><br><span class="line">               	<span class="keyword">return</span> book;</span><br><span class="line">               &#125;)</span><br><span class="line">               .build();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">private</span> GraphQLFieldDefinition <span class="title">createBooksField</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> GraphQLFieldDefinition.newFieldDefinition()</span><br><span class="line">               .name(<span class="string">"books"</span>)</span><br><span class="line">               .type(<span class="keyword">new</span> GraphQLList(bookType))</span><br><span class="line">               .dataFetcher(environment -&gt; &#123;</span><br><span class="line">                   </span><br><span class="line">                   List&lt;Book&gt; list = <span class="keyword">new</span> ArrayList&lt;Book&gt;();</span><br><span class="line">                   list = bookService.getAllBooks();</span><br><span class="line">               	<span class="keyword">return</span> list;</span><br><span class="line">               &#125;)</span><br><span class="line">               .build();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>tyep</code>属性里对象名就是对应了我们上面定义的<code>GraphQLOutputType</code>对象<br>如果返回的是数组，就需要用<code>GraphQLList</code>对象进行包裹<br>在<code>book</code>返回结构体重还定义了<code>argument</code>参数，这样可以通过参数来获取对应的数据</p>
+<p>最后我们再把定义好的返回方法与GraphQLSchema对象设置好，这个对象才是我们在controller<br>里的操作对象，再将设置好的对象返回：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> GraphQLSchema <span class="title">getGraphSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       initOutputType();</span><br><span class="line">       schema = GraphQLSchema.newSchema().query(newObject()</span><br><span class="line">               .name(<span class="string">"GraphQuery"</span>)</span><br><span class="line">               .field(createBookField())</span><br><span class="line">               .field(createBooksField())</span><br><span class="line">               .build()).build();</span><br><span class="line">       <span class="keyword">return</span> schema;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后我们在定义一个控制器用来访问数据，由于通过graphQL读取数据需要给出一个数据结构，<br>我提供了一个默认的结构：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/books"</span>, method = RequestMethod.GET, produces = <span class="string">"application/hal+json;charset=UTF-8"</span>)</span><br><span class="line"><span class="keyword">public</span> HttpEntity&lt;?&gt; getBatch(<span class="meta">@RequestParam</span>(required = <span class="keyword">false</span>, </span><br><span class="line">	defaultValue = <span class="string">"&#123;books &#123;id,name,bookCategory&#123;name&#125;&#125;&#125;"</span>) String query) &#123;</span><br><span class="line">	</span><br><span class="line">	logger.debug(query);</span><br><span class="line">	GraphQLSchema schema = graphQLTest.getGraphSchema();</span><br><span class="line">	</span><br><span class="line">	Map&lt;String, Object&gt; result2 = (Map&lt;String, Object&gt;) <span class="keyword">new</span> GraphQL(schema).execute(query).getData();</span><br><span class="line">	</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity&lt;&gt;(result2, HttpStatus.OK);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p>把整个项目运行起来就可以看到相关的结果了：</p>
+<p>1.采用默认的query语句<code>{books {id,name,bookCategory{name}}}</code><br><img src="http://img.wqzhang.top/graphqlresult1.png" alt="pic1"></p>
+<p>2.更换query语句结构为<code>{books {id,name}}</code><br><img src="http://img.wqzhang.top/graphqlresult2.png" alt="pic2"></p>
+<p>3.更换query查询类型，通过id查询单个book信息<code>{book (id:&quot;1&quot;) {id,name,bookCategory{name}}}</code><br><img src="http://img.wqzhang.top/graphqlresult3.png" alt="pic3"></p>
+<p>至于grapgQL的其他特性，包括更新数据等等，我将会在后面更新，thanks！</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/zhang-wen-qiang-57-99">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+        <li>
+            <a target="_blank" href="http://weibo.com/3645516294">
+                            <span class="fa-stack fa-lg">
+                                  <i class="iconfont icon-weibo"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/wqZhang">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span>/</span>
+        
+        <span><a href="https://www.qiniu.com/">七牛</a></span>
+        <span>/</span>
+        
+        <span><a href="https://oschina.net">Oschina</a></span>
+        <span>/</span>
+        
+        <span><a href="#">It helps SEO</a></span>
+        <span>/</span>
+        
+    </p>
+    
+    <p>
+        <span>
+        <a href="http://www.miitbeian.gov.cn/" target="_blank">蜀ICP备17009870号</a> &nbsp;
+        </span>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        if( '' || '')
+        var disqus_config = function () {
+            this.page.url = '';  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://airclouds-blog.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+
+
+
+</html>
